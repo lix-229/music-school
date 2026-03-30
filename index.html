@@ -244,6 +244,55 @@
             50% { opacity: 1; transform: scale(1); }
         }
         .hero-content h1 { animation: fadeInOut 4s ease-in-out infinite; }
+        /* --- PREMIUM ANIMATIONS & HOVERS --- */
+        
+        /* 1. Card Lift & Glow Effect */
+        .ministry-card, .give-card, .pastor-circle-card {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+        }
+        .ministry-card:hover, .give-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        /* 2. 3D Button Interaction */
+        .btn-give, .btn-submit, [style*="background: var(--navy)"], [style*="background: var(--gold)"] {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-give:hover, .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(201, 169, 97, 0.3);
+            filter: brightness(1.1);
+        }
+        .btn-give:active { transform: translateY(0); }
+
+        /* 3. Smooth Section Reveal Animation */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 4. Glassmorphism for the Action Hub buttons */
+        [style*="margin-top: -40px"] a {
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* 5. Image Ken Burns Effect */
+        .hero {
+            animation: zoomEffect 20s infinite alternate;
+        }
+        @keyframes zoomEffect {
+            from { background-size: 100%; }
+            to { background-size: 110%; }
+        }
     </style>
 </head>
 <body>
@@ -639,6 +688,37 @@ that we may present every man perfect in Christ Jesus”. (Colossians 1:28).</p>
     let scrolled = (winScroll / height) * 100;
     document.getElementById("scroll-progress").style.width = scrolled + "%";
 };
+// --- SCROLL REVEAL ENGINE ---
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const scrollObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    // Add a little extra pop to children
+                    if(entry.target.classList.contains('ministry-grid')) {
+                        entry.target.style.transitionDelay = "0.2s";
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .ministry-card, .give-card').forEach(el => {
+            scrollObserver.observe(el);
+        });
+
+        // Add smooth parallax to hero text
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const heroText = document.querySelector('.hero-content');
+            if(heroText) {
+                heroText.style.transform = `translateY(${scrolled * 0.3}px)`;
+                heroText.style.opacity = 1 - (scrolled / 600);
+            }
+        });
     </script>
 </body>
 </html>
